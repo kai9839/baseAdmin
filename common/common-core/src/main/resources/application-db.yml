@@ -1,0 +1,48 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/baseAdmin
+    username: postgres
+    password: 123456
+    hikari:
+      # 连接池名
+      pool-name: HikariCP
+      # 最小空闲连接数
+      minimum-idle: 10
+      # 最大连接数
+      maximum-pool-size: 20
+      # 空闲连接存活时间
+      idle-timeout: 600000
+      # 连接最大存活时间
+      max-lifetime: 1800000
+      # 连接超时时间
+      connection-timeout: 30000
+      # 测试连接是否可用的查询语句
+      connection-test-query: SELECT 1
+
+# MyBatis Plus配置
+mybatis-plus:
+  # 搜索指定包别名
+  typeAliasesPackage: com.example.**.domain
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # MyBatis-Plus全局配置
+  configuration:
+    # 驼峰命名转换
+    map-underscore-to-camel-case: true
+    # 开启缓存
+    cache-enabled: true
+    # 允许JDBC支持自动生成主键
+    use-generated-keys: true
+    # 配置默认的执行器
+    default-executor-type: simple
+    # 指定 MyBatis 所用日志的具体实现
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 主键类型
+      id-type: auto
+      # 逻辑删除配置
+      logic-delete-field: delFlag
+      logic-delete-value: 1
+      logic-not-delete-value: 0 

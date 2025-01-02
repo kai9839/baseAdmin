@@ -1,0 +1,4 @@
+onlyoffice:
+  server-url: http://192.168.28.87:9999/  # OnlyOffice服务器地址
+  jwt-secret: my_jwt_secret          # JWT密钥
+  file-storage-path: D:/onlyOffice/files/  # 文件存储路径 

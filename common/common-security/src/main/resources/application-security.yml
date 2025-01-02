@@ -1,0 +1,5 @@
+jwt:
+  # JWT加解密使用的密钥
+  secret: abcdefghijklmnopqrstuvwxyz
+  # JWT的超期限时间(60*60*24)
+  expiration: 86400 

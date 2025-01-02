@@ -1,0 +1,16 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  profiles:
+    active: db,swagger
+
+  mvc:
+    static-path-pattern: /**
+
+onlyoffice:
+  server-url: http://192.168.28.87:9999/
+  jwt-secret: my_jwt_secret
+  file-storage-path: D:/onlyOffice/files/ 
