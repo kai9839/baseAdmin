@@ -8,23 +8,32 @@
 <body>
     <div id="placeholder"></div>
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const fileName = urlParams.get('fileName');
-        const fileType = urlParams.get('fileType');
-        const key = urlParams.get('key');
+        let docEditor = null;  // 添加全局变量存储编辑器实例
 
-        fetch(`/onlyoffice/config?fileName=${fileName}&fileType=${fileType}&key=${key}`)
-            .then(response => response.json())
-            .then(data => {
-                const config = data.data;
-                // 添加OnlyOffice服务器地址
-                config.editorConfig.customization = {
-                    goback: {
-                        url: "/",
+        function initEditor() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const fileName = urlParams.get('fileName');
+            const fileType = urlParams.get('fileType');
+            const key = urlParams.get('key');
+
+            fetch(`/onlyoffice/config?fileName=${fileName}&fileType=${fileType}&key=${key}`)
+                .then(response => response.json())
+                .then(data => {
+                    const config = data.data;
+                    config.editorConfig.customization = {
+                        goback: {
+                            url: "/",
+                        }
+                    };
+                    if (docEditor) {
+                        docEditor.destroyEditor();  // 销毁旧的编辑器实例
                     }
-                };
-                new DocsAPI.DocEditor("placeholder", config);
-            });
+                    docEditor = new DocsAPI.DocEditor("placeholder", config);
+                });
+        }
+
+        // 页面加载时初始化编辑器
+        initEditor();
     </script>
 </body>
 </html> 
