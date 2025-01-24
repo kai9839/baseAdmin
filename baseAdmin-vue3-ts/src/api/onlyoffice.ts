@@ -1,10 +1,25 @@
 import request from '@/utils/request'
-import type { FileModel, OnlyOfficeConfig } from '@/types/file'
+import type { FileModel } from '@/types/file'
 
-export function getFileList() {
-    return request<FileModel[]>({
-        url: '/onlyoffice/list',
-        method: 'get'
+export interface FileQueryParams {
+    fileName?: string;
+    fileType?: string;
+    beginTime?: string;
+    endTime?: string;
+    pageNum?: number;
+    pageSize?: number;
+}
+
+export interface PageResult<T> {
+    records: T[];
+    total: number;
+}
+
+export function getFileList(params: FileQueryParams) {
+    return request<PageResult<FileModel>>({
+        url: '/onlyoffice/page',
+        method: 'get',
+        params
     })
 }
 

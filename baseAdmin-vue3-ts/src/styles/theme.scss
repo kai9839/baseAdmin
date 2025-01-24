@@ -1,0 +1,21 @@
+// 主题相关的样式
+.theme-light {
+    --bg-color: #f0f2f5;
+    --text-color: rgba(0, 0, 0, 0.85);
+    --header-bg: #fff;
+    --sidebar-bg: #001529;
+}
+
+.theme-dark {
+    --bg-color: #141414;
+    --text-color: rgba(255, 255, 255, 0.85);
+    --header-bg: #1f1f1f;
+    --sidebar-bg: #141414;
+}
+
+.theme-realDark {
+    --bg-color: #000;
+    --text-color: rgba(255, 255, 255, 0.85);
+    --header-bg: #141414;
+    --sidebar-bg: #000;
+} 

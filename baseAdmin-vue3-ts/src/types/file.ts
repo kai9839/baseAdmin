@@ -1,7 +1,15 @@
 export interface FileModel {
-    fileName: string
-    fileType: string
-    key: string
+    fileId?: number;
+    fileName: string;
+    fileKey: string;
+    fileType: string;
+    fileSize?: number;
+    createBy?: string;
+    createTime?: string;
+    updateBy?: string;
+    updateTime?: string;
+    delFlag?: string;
+    remark?: string;
 }
 
 export interface OnlyOfficeConfig {
