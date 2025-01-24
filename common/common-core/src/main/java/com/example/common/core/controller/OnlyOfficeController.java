@@ -3,6 +3,9 @@ package com.example.common.core.controller;
 import com.example.common.core.config.OnlyOfficeConfig;
 import com.example.common.core.domain.R;
 import com.example.common.core.domain.dto.FileModel;
+import com.example.common.core.domain.entity.SysFile;
+import com.example.common.core.domain.dto.FileQueryDTO;
+import com.example.common.core.mapper.SysFileMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +36,9 @@ import java.util.Base64;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import com.example.common.core.domain.vo.PageVO;
 
 @Slf4j
 @Tag(name = "OnlyOffice", description = "OnlyOffice相关接口")
@@ -42,6 +48,9 @@ public class OnlyOfficeController {
 
     @Autowired
     private OnlyOfficeConfig config;
+
+    @Autowired
+    private SysFileMapper fileMapper;
 
     @PostConstruct
     public void init() {
@@ -60,7 +69,7 @@ public class OnlyOfficeController {
 
     @Operation(summary = "上传文件")
     @PostMapping("/upload")
-    public R<FileModel> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public R<FileModel> upload(@RequestParam("file") MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();
         String fileExt = originalFilename.substring(originalFilename.lastIndexOf("."));
         String newFileName = UUID.randomUUID().toString() + fileExt;
@@ -76,6 +85,17 @@ public class OnlyOfficeController {
         fileModel.setFileName(originalFilename);
         fileModel.setFileType(fileExt.substring(1));
         fileModel.setKey(newFileName);
+        
+        // 保存文件信息到数据库
+        SysFile sysFile = new SysFile();
+        sysFile.setFileName(file.getOriginalFilename());
+        sysFile.setFileKey(newFileName);
+        sysFile.setFileType(fileExt.substring(1));
+        sysFile.setFileSize(file.getSize());
+        sysFile.setCreateBy("admin"); // 这里可以从登录用户中获取
+        sysFile.setCreateTime(LocalDateTime.now());
+        sysFile.setDelFlag("0");
+        fileMapper.insert(sysFile);
         
         return R.ok(fileModel);
     }
@@ -237,12 +257,34 @@ public class OnlyOfficeController {
 
     @Operation(summary = "删除文件")
     @DeleteMapping("/delete/{key}")
-    public R<Boolean> deleteFile(@PathVariable String key) {
+    public R<Boolean> delete(@PathVariable String key) {
+        // 删除文件
         File file = new File(config.getFileStoragePath(), key);
+        boolean deleted = false;
         if (file.exists() && file.isFile()) {
-            return R.ok(file.delete());
+            deleted = file.delete();
         }
-        return R.fail("文件不存在");
+        
+        // 更新数据库记录
+        if (deleted) {
+            fileMapper.deleteByFileKey(key);
+        }
+        
+        return R.ok(deleted);
+    }
+
+    @GetMapping("/page")
+    public R<PageVO<SysFile>> page(FileQueryDTO query) {
+        // 查询总数
+        int total = fileMapper.selectFileCount(query);
+        
+        // 查询列表
+        List<SysFile> list = Collections.emptyList();
+        if (total > 0) {
+            list = fileMapper.selectFileList(query);
+        }
+        
+        return R.ok(new PageVO<>(list, total));
     }
 
     private String getDocumentType(String fileType) {

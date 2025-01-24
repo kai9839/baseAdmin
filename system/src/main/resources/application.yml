@@ -10,6 +10,18 @@ spring:
   mvc:
     static-path-pattern: /**
 
+  servlet:
+    multipart:
+      # 单个文件大小限制
+      max-file-size: 100MB
+      # 总上传数据大小限制
+      max-request-size: 200MB
+
+# 自定义banner
+banner:
+  charset: UTF-8
+  location: classpath:banner.txt
+
 onlyoffice:
   server-url: http://192.168.28.87:9999/
   jwt-secret: my_jwt_secret

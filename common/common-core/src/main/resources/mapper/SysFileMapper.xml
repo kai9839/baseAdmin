@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.common.core.mapper.SysFileMapper">
+    
+    <sql id="selectFileSql">
+        SELECT file_id, file_name, file_key, file_type, file_size, 
+               create_by, create_time, update_by, update_time, del_flag, remark
+        FROM sys_file
+    </sql>
+    
+    <sql id="whereClause">
+        <where>
+            del_flag = '0'
+            <if test="query.fileName != null and query.fileName != ''">
+                AND file_name LIKE CONCAT('%', #{query.fileName}, '%')
+            </if>
+            <if test="query.fileType != null and query.fileType != ''">
+                AND file_type = #{query.fileType}
+            </if>
+            <if test="query.beginTime != null and query.beginTime != ''">
+                AND create_time >= to_timestamp(#{query.beginTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+            <if test="query.endTime != null and query.endTime != ''">
+                AND create_time &lt;= to_timestamp(#{query.endTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+        </where>
+    </sql>
+    
+    <insert id="insert" parameterType="SysFile" useGeneratedKeys="true" keyProperty="fileId">
+        INSERT INTO sys_file (
+            file_name, file_key, file_type, file_size, create_by, 
+            create_time, update_by, update_time, del_flag, remark
+        ) VALUES (
+            #{fileName}, #{fileKey}, #{fileType}, #{fileSize}, #{createBy},
+            #{createTime}, #{updateBy}, #{updateTime}, #{delFlag}, #{remark}
+        )
+    </insert>
+    
+    <select id="selectFileList" resultType="SysFile">
+        <include refid="selectFileSql"/>
+        <include refid="whereClause"/>
+        ORDER BY create_time DESC
+        LIMIT #{query.pageSize} OFFSET (#{query.pageNum} - 1) * #{query.pageSize}
+    </select>
+    
+    <select id="selectFileCount" resultType="int">
+        SELECT COUNT(1) FROM sys_file
+        <include refid="whereClause"/>
+    </select>
+    
+    <select id="selectByFileKey" resultType="SysFile">
+        <include refid="selectFileSql"/>
+        WHERE file_key = #{fileKey} AND del_flag = '0'
+    </select>
+    
+    <update id="deleteByFileKey">
+        UPDATE sys_file SET del_flag = '1' WHERE file_key = #{fileKey}
+    </update>
+</mapper> 

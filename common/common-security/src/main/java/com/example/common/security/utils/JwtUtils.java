@@ -12,14 +12,14 @@ import java.util.Map;
 @Component
 public class JwtUtils {
 
-    @Value("${jwt.secret:defaultSecret}")
+    @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration:86400}")
-    private long expiration;
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
     /**
-     * 生成token
+     * 从数据声明生成令牌
      */
     public String generateToken(Map<String, Object> claims) {
         return Jwts.builder()
@@ -30,7 +30,7 @@ public class JwtUtils {
     }
 
     /**
-     * 从token中获取JWT中的负载
+     * 从令牌中获取数据声明
      */
     public Claims getClaimsFromToken(String token) {
         return Jwts.parser()
@@ -40,10 +40,15 @@ public class JwtUtils {
     }
 
     /**
-     * 验证token是否过期
+     * 判断令牌是否过期
      */
     public boolean isTokenExpired(String token) {
-        Claims claims = getClaimsFromToken(token);
-        return claims.getExpiration().before(new Date());
+        try {
+            Claims claims = getClaimsFromToken(token);
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
     }
 } 

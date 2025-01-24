@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.Collection;
-import java.io.Serializable;
 
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
@@ -21,7 +20,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public SysUser selectUserByUsername(String username) {
+    public SysUser getByUsername(String username) {
         return getOne(new LambdaQueryWrapper<SysUser>()
                 .eq(SysUser::getUsername, username)
                 .eq(SysUser::getDelFlag, "0"));
@@ -40,39 +39,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @Override
     public boolean checkUsernameUnique(String username) {
         return count(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getUsername, username)) == 0;
-    }
-
-    @Override
-    public boolean checkPhoneUnique(SysUser user) {
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getPhone, user.getPhone())
-                .ne(user.getUserId() != null, SysUser::getUserId, user.getUserId());
-        return count(wrapper) == 0;
-    }
-
-    @Override
-    public boolean checkEmailUnique(SysUser user) {
-        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getEmail, user.getEmail())
-                .ne(user.getUserId() != null, SysUser::getUserId, user.getUserId());
-        return count(wrapper) == 0;
-    }
-
-    @Override
-    public boolean updateUserProfile(SysUser user) {
-        user.setUpdateTime(new Date());
-        return updateById(user);
+                .eq(SysUser::getUsername, username)
+                .eq(SysUser::getDelFlag, "0")) == 0;
     }
 
     @Override
     public boolean resetUserPwd(String username, String password) {
-        SysUser user = new SysUser();
-        user.setPassword(passwordEncoder.encode(password));
-        user.setUpdateTime(new Date());
-        return update(user, new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getUsername, username)
-                .eq(SysUser::getDelFlag, "0"));
+        return update(new SysUser().setPassword(password),
+                new LambdaQueryWrapper<SysUser>()
+                        .eq(SysUser::getUsername, username)
+                        .eq(SysUser::getDelFlag, "0"));
     }
 
     @Override

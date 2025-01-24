@@ -3,10 +3,12 @@ package com.example.common.core.domain.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
 @Data
+@Accessors(chain = true)
 @TableName("sys_user")
 public class SysUser {
     
@@ -17,23 +19,11 @@ public class SysUser {
     
     private String password;
     
-    private String nickName;
-    
-    private String email;
-    
-    private String phone;
-    
-    private String sex;
-    
     private String avatar;
     
     private String status;
     
     private String delFlag;
-    
-    private String loginIp;
-    
-    private Date loginDate;
     
     private String createBy;
     
